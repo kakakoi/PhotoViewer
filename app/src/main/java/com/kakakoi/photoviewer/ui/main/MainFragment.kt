@@ -5,10 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.kakakoi.photoviewer.R
+import com.kakakoi.photoviewer.databinding.MainFragmentBinding
 
 
 class MainFragment : Fragment() {
@@ -18,32 +18,42 @@ class MainFragment : Fragment() {
         const val SPAN_COUNT = 4
     }
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
+    private lateinit var photoAdapter: PhotoAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        return MainFragmentBinding.inflate(inflater, container, false)
+            .apply {
+                this.viewModel = this@MainFragment.viewModel
+                lifecycleOwner = viewLifecycleOwner
 
-        val list = Array<String>(10) {"テキスト$it"}
-        val adapter = PhotoAdapter(list, SPAN_COUNT)
-        val layoutManager = GridLayoutManager(activity,SPAN_COUNT, GridLayoutManager.VERTICAL, false);
-
-        // アダプターとレイアウトマネージャーをセット
-        val view = inflater.inflate(R.layout.main_fragment, container, false)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
-
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = adapter
-        recyclerView.setHasFixedSize(true)
-
-        return view
+                list.run {
+                    layoutManager = GridLayoutManager(context,SPAN_COUNT, GridLayoutManager.VERTICAL, false)
+                    addItemDecoration(
+                        DividerItemDecoration(
+                            context,
+                            DividerItemDecoration.VERTICAL
+                        )
+                    )
+                    adapter = PhotoAdapter(viewLifecycleOwner, this@MainFragment.viewModel, SPAN_COUNT).also {
+                        photoAdapter = it
+                    }
+                }
+            }
+            .run {
+                root
+            }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
+        viewModel.run {
+            photos.observe(viewLifecycleOwner, {
+                photoAdapter.submitList(it)
+            })
+        }
     }
-
 }

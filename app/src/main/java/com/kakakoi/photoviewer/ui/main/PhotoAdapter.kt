@@ -4,43 +4,74 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.kakakoi.photoviewer.R
+import com.kakakoi.photoviewer.data.Photo
+import com.kakakoi.photoviewer.databinding.PhotoAdapterBinding
 import com.kakakoi.photoviewer.glide.GlideApp
 
-class PhotoAdapter(private var mList: Array<String>, private var spanCount: Int) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
-
-    class PhotoViewHolder(val view: View): RecyclerView.ViewHolder(view) {
-        val sampleImg = view.findViewById<View>(R.id.card_image_view) as ImageView
+private object DiffCallback : DiffUtil.ItemCallback<Photo>() {
+    override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    private var mImageWidth = 0
-    private var mParent: ViewGroup? = null
+    override fun areContentsTheSame(oldItem: Photo, newItem: Photo): Boolean {
+        return oldItem == newItem
+    }
+}
+
+class PhotoAdapter(
+    private val viewLifecycleOwner: LifecycleOwner,
+    private val viewModel: MainViewModel,
+    //private val spanCount: Int
+    ) : ListAdapter<Photo, PhotoAdapter.PhotoViewHolder>(DiffCallback) {
+
+    class PhotoViewHolder(private val binding: PhotoAdapterBinding):
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Photo, viewLifecycleOwner: LifecycleOwner, viewModel: MainViewModel){
+            binding.run {
+                lifecycleOwner = viewLifecycleOwner
+                photo = item
+                this.viewModel = viewModel
+
+                executePendingBindings()
+            }
+        }
+    }
+
+    //private var mImageWidth = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        mParent = parent
-        mImageWidth = parent.width / spanCount
+        //mImageWidth = parent.width / spanCount
         val layoutInflater = LayoutInflater.from(parent.context)
-        val item = layoutInflater.inflate(R.layout.photo_adapter, parent, false)
-        return PhotoViewHolder(item)
+        return PhotoViewHolder(PhotoAdapterBinding.inflate(layoutInflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        holder.sampleImg.setImageResource(R.mipmap.ic_launcher_round)
+        holder.bind(getItem(position), viewLifecycleOwner, viewModel)
+/*
+        mParent?.let {
+            GlideApp.with(it.context)
+                .load(R.mipmap.ic_launcher)
+                .placeholder(R.drawable.ic_launcher_background)
+                .error(R.drawable.ic_launcher_foreground)
+                .override(mImageWidth, mImageWidth)
+                .into(holder.sampleImg)
+        }
 
-        GlideApp.with(mParent!!.context)
-            .load(R.mipmap.ic_launcher)
-            .placeholder(R.drawable.ic_launcher_background)
-            .error(R.drawable.ic_launcher_foreground)
-            .override(mImageWidth, mImageWidth)
-            .into(holder.sampleImg)
+ */
     }
 
+    /*
     override fun onViewRecycled(holder: PhotoViewHolder) {
         super.onViewRecycled(holder)
-//        Glide.clear(viewHolder.getImageView());
+        mParent?.let {
+            GlideApp.with(it.context)
+                .clear(holder.sampleImg)
+        }
     }
-    override fun getItemCount(): Int {
-        return mList.size
-    }
+     */
 }
