@@ -16,4 +16,5 @@ local.properties
 /app/google-services.json
 /app/release/*
 /app/debug/*
+/app/schemas/*
 /tmp/*

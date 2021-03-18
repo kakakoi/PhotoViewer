@@ -17,7 +17,7 @@ class MainViewModel : ViewModel() {
     private val _photos = MutableLiveData<List<Photo>>(emptyList())
     val photos: LiveData<List<Photo>> = _photos.distinctUntilChanged()
 
-    private var index = 0L
+    private var index = 0
     private var name = "test"
     private var resource = R.mipmap.ic_launcher
 

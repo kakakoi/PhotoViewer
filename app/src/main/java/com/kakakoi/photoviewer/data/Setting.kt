@@ -1,14 +1,15 @@
 package com.kakakoi.photoviewer.data
 
-import androidx.lifecycle.MutableLiveData
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/**
+ * address,dns,smb_user,smb_pass,root_dir
+ */
 @Entity
-data class Photo(
+data class Setting(
     @PrimaryKey val id: Int,
     @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "resource") val resource: Int,
-    @ColumnInfo(name = "is_checked") val isChecked: MutableLiveData<Boolean> = MutableLiveData(false)
+    @ColumnInfo(name = "value") val value: String,
 )
