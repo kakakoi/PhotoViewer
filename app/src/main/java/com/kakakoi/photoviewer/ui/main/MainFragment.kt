@@ -38,7 +38,7 @@ class MainFragment : Fragment() {
                             DividerItemDecoration.VERTICAL
                         )
                     )
-                    adapter = PhotoAdapter(viewLifecycleOwner, this@MainFragment.viewModel, SPAN_COUNT).also {
+                    adapter = PhotoAdapter(viewLifecycleOwner, this@MainFragment.viewModel).also {
                         photoAdapter = it
                     }
                 }
