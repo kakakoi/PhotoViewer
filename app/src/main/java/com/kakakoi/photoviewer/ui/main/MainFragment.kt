@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
+import com.kakakoi.photoviewer.R
 import com.kakakoi.photoviewer.databinding.MainFragmentBinding
+import com.kakakoi.photoviewer.lib.EventObserver
 
 
 class MainFragment : Fragment() {
@@ -25,6 +28,9 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel.onTransit.observe(viewLifecycleOwner, EventObserver {
+            findNavController().navigate(R.id.action_MainFragment_to_storageSettingsFragment2)
+        })
         return MainFragmentBinding.inflate(inflater, container, false)
             .apply {
                 this.viewModel = this@MainFragment.viewModel

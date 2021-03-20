@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.kakakoi.photoviewer.ui.main.MainFragment
+import androidx.navigation.findNavController
+import androidx.navigation.ui.onNavDestinationSelected
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,9 +14,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
         setSupportActionBar(findViewById(R.id.toolbar))
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance())
-                .commitNow()
+
         }
     }
 
@@ -27,17 +26,8 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_settings -> {
-            true
-        }
-
-        R.id.action_log -> {
-            true
-        }
-
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment)
+        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
     }
 }

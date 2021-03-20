@@ -9,6 +9,9 @@ plugins {
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
+    buildFeatures {
+        viewBinding true
+    }
     buildFeatures.dataBinding = true
 
     defaultConfig {
@@ -46,6 +49,9 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     def lifecycle_version = "2.3.0"
     def arch_version = "2.1.0"
 
