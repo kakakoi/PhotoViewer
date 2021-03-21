@@ -7,7 +7,7 @@
         android:title="@string/action_log"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/action_settings"
+    <item android:id="@+id/main_settings_fragment"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
 </menu>

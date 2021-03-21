@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="storage"
+            type="com.kakakoi.photoviewer.data.Storage" />
+
+        <variable
+            name="viewModel"
+            type="com.kakakoi.photoviewer.ui.setting.MainSettingsViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.setting.MainSettingsFragment">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/nas_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/nas_input_add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_nas"
+            app:layout_constraintTop_toBottomOf="@+id/nas_list"
+            android:drawableLeft="@android:drawable/ic_input_add"
+            android:onClick="@{() -> viewModel.onClick()}"
+            tools:layout_editor_absoluteX="0dp" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

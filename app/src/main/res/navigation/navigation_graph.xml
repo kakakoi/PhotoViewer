@@ -13,9 +13,6 @@
         <action
             android:id="@+id/action_main_to_settings"
             app:destination="@id/settingsFragment" />
-        <action
-            android:id="@+id/action_MainFragment_to_storageSettingsFragment2"
-            app:destination="@id/storageSettingsFragment" />
     </fragment>
 
     <fragment
@@ -31,7 +28,13 @@
         android:name="com.kakakoi.photoviewer.ui.setting.StorageSettingsFragment"
         android:label="StorageSettingsFragment" />
 
-    <fragment android:id="@+id/action_settings"
-        android:label="action_settings"
-        android:name="com.kakakoi.photoviewer.ui.setting.SettingsFragment" />
+    <fragment
+        android:id="@+id/main_settings_fragment"
+        android:name="com.kakakoi.photoviewer.ui.setting.MainSettingsFragment"
+        android:label="fragment_main_settings"
+        tools:layout="@layout/main_settings_fragment">
+        <action
+            android:id="@+id/action_main_settings_to_storage_settings"
+            app:destination="@id/storageSettingsFragment" />
+    </fragment>
 </navigation>
