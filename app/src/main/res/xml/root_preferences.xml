@@ -24,5 +24,9 @@
             android:inputType="textPassword"
             app:useSimpleSummaryProvider="true" />
 
+        <Preference
+            app:icon="@android:drawable/ic_input_add"
+            app:key="add_nas_button"
+            app:title="@string/add_nas_button" />
     </PreferenceCategory>
 </PreferenceScreen>
