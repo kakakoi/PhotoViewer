@@ -25,6 +25,7 @@
             app:useSimpleSummaryProvider="true" />
 
         <Preference
+            android:id="@+id/add_nas_button"
             app:icon="@android:drawable/ic_input_add"
             app:key="add_nas_button"
             app:title="@string/add_nas_button" />

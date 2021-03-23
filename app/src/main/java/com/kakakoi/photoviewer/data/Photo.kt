@@ -10,5 +10,5 @@ data class Photo(
     @PrimaryKey val id: Int,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "resource") val resource: Int,
-    @ColumnInfo(name = "is_checked") val isChecked: MutableLiveData<Boolean> = MutableLiveData(false)
+    @ColumnInfo(name = "is_checked") val isChecked: Boolean = false
 )

@@ -65,7 +65,7 @@ class MainSettingsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.run {
-            storages.observe(viewLifecycleOwner, {
+            allStorages.observe(viewLifecycleOwner, {
                 storageAdapter.submitList(it)
             })
         }

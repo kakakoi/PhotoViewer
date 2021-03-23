@@ -9,6 +9,7 @@ import android.text.TextUtils
 import android.text.method.DigitsKeyListener
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
@@ -25,13 +26,18 @@ class StorageSettingsFragment : PreferenceFragmentCompat() {
         const val KEY_SMB_USER = "smb_user"
         const val KEY_SMB_DIR = "smb_dir"
         const val TAG = ""
+        const val KEY_ADD_NAS = "add_nas_button"
     }
+
+    private val viewModel: StorageSettingsViewModel by viewModels()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-        val button: Preference? = findPreference("toastMsg")
+        val button: Preference? = findPreference(KEY_ADD_NAS)
         button?.setOnPreferenceClickListener {
+
+            viewModel.addStorage()
             findNavController().navigate(R.id.main_settings_fragment)
             Log.d(TAG, "onCreatePreferences: ")
             true
