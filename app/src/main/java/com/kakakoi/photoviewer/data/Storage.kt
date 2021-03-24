@@ -10,9 +10,9 @@ data class Storage(
     @ColumnInfo(name = "id")val id: Int = 0,
     @ColumnInfo(name = "name") val name: String = "",
     @ColumnInfo(name = "resource") val resource: Int = 0,
-    @ColumnInfo(name = "address") val address: String? = "",
-    @ColumnInfo(name = "user") val user: String? = "",
-    @ColumnInfo(name = "pass") val pass: String? = "",
-    @ColumnInfo(name = "dir") val dir: String? = "",
-    @ColumnInfo(name = "is_checked") var isChecked: Boolean? = false
+    @ColumnInfo(name = "address") val address: String = "",
+    @ColumnInfo(name = "user") val user: String = "",
+    @ColumnInfo(name = "pass") val pass: String = "",
+    @ColumnInfo(name = "dir") val dir: String = "",
+    @ColumnInfo(name = "is_checked") var isChecked: Boolean = false
 )
