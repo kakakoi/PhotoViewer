@@ -29,7 +29,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewModel.onTransit.observe(viewLifecycleOwner, EventObserver {
-            findNavController().navigate(R.id.action_MainFragment_to_storageSettingsFragment2)
+            findNavController().navigate(R.id.action_main_to_settings)
         })
         return MainFragmentBinding.inflate(inflater, container, false)
             .apply {

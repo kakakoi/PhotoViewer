@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="storage"
+            type="com.kakakoi.photoviewer.data.Storage" />
+
+        <variable
+            name="viewModel"
+            type="com.kakakoi.photoviewer.ui.setting.MainSettingsViewModel" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.onClickItem(storage)}">
+
+        <TextView
+            android:id="@+id/storage_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{storage.address}"/>
+    </LinearLayout>
+</layout>
