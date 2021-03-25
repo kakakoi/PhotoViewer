@@ -5,11 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = arrayOf(Photo::class, Setting::class, Storage::class), version = 1)
+@Database(entities = arrayOf(Photo::class, Setting::class, Storage::class, SmbDirectory::class), version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
     abstract fun settingDao(): SettingDao
     abstract fun storageDao(): StorageDao
+    abstract fun smbDirectoryDao(): SmbDirectoryDao
 
     companion object {
         @Volatile

@@ -25,14 +25,24 @@ class MainViewModel : ViewModel() {
     private var resource = R.mipmap.ic_launcher
 
     fun addElement(){
-        val photo = Photo(index, "$name$index", resource)
+        val photo = Photo(
+            id = index,
+            name = "$name$index",
+            resource = resource,
+            createdAt = "",
+            dateTimeOriginal="",
+            cachePath = "",
+            networkPath = "",
+            type = "",
+            isChecked = true
+        )
         photosRaw.add(photo)
         _photos.value = ArrayList(photosRaw)
 
         index +=1
         Log.d(TAG, "addElement: $index")
     }
-    
+
     fun onClickItem(item: Photo){
         onTransit.value = Event("onTransit")
         Log.d(TAG, "onClickItem: ${item.id}")
