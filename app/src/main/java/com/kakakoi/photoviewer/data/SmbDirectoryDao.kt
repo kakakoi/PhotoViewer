@@ -11,7 +11,7 @@ interface SmbDirectoryDao {
     fun findByPath(path: String): SmbDirectory
 
     @Query("SELECT * FROM smbdirectory WHERE status = :status ORDER BY LENGTH(path) ASC LIMIT 1")
-    fun findByStatus(status: String): SmbDirectory
+    fun findByStatus(status: String): SmbDirectory?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(vararg smbDirectorys: SmbDirectory)
