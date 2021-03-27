@@ -23,7 +23,8 @@ class Smb(private val application: PhotoViewerApplication, private val storage: 
     val onTransit = MutableLiveData<Event<String>>()
 
     private val cifsContext = login()
-    private val basePath = SMB_SCHEME + storage.address + storage.dir
+    val basePath = SMB_SCHEME + storage.address + storage.dir
+    val baseUrl = convertUrl(basePath)
     val info = "smb info: basePath=${basePath}, user=${storage.user}, pass=${storage.pass}"
 
     private fun login(): CIFSContext{
@@ -43,11 +44,15 @@ class Smb(private val application: PhotoViewerApplication, private val storage: 
 
     fun connect(uncPath: String = basePath): SmbFile? {
         return try {
-            val url = uncPath?.replace("\\", "/")
+            val url = convertUrl(uncPath)
             SmbFile(url, cifsContext)
         } catch (e: MalformedURLException) {
             e.printStackTrace()
             null
         }
+    }
+
+    fun convertUrl(uncPath: String = basePath): String {
+        return uncPath.replace("\\", "/")
     }
 }

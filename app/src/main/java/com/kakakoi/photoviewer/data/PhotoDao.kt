@@ -17,7 +17,10 @@ interface PhotoDao {
     fun findByName(name: String): Photo
 
     @Query("SELECT * FROM photo WHERE network_path = :networkPath")
-    fun findByNetworkPath(networkPath: String): Photo
+    fun findByNetworkPath(networkPath: String): Photo?
+
+    @Query("SELECT * FROM photo WHERE cache_path IS NULL OR cache_path IS '' LIMIT 1")
+    fun findByStateWait(): Photo?
 
     @Insert
     fun insertAll(vararg photos: Photo)

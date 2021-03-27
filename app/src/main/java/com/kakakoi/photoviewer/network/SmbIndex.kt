@@ -11,6 +11,10 @@ import com.kakakoi.photoviewer.extensions.mimetype
 import jcifs.smb.SmbFile
 import java.util.*
 
+/**
+ * Smbにある対象の索引をDB登録
+ * 多重実行できないようにシングルトン
+ */
 class SmbIndex (
     private val application: PhotoViewerApplication,
     private val storage: Storage
@@ -41,8 +45,10 @@ class SmbIndex (
 
     fun finish(){
         if(isRunning()) {
-            throw IllegalStateException("already running")
+            throw IllegalStateException("already running")//TODO 起動しない場合は別のエラー
         } else {
+            parentSmbFile?.close()
+            parentSmbFile = null
             instance = null
         }
     }
@@ -76,9 +82,7 @@ class SmbIndex (
                 if (target == null) break
             }
         }
-        parentSmbFile?.close()
-        parentSmbFile = null
-        finish()//TODO simple
+        finish()
 
         return countIndex
     }

@@ -4,9 +4,9 @@ class PhotoRepository(private val photoDao: PhotoDao) {
 
     fun marge(photo: Photo) {
         val old = photoDao.findByNetworkPath(photo.networkPath)
-        old?.apply {
+        old?.run {
             photoDao.update(
-                photo.cachePath,
+                photo.cachePath ?: "",
                 photo.dateTimeOriginal,
                 photo.resource,
                 photo.networkPath
@@ -14,5 +14,9 @@ class PhotoRepository(private val photoDao: PhotoDao) {
         } ?: run {
             photoDao.insertAll(photo)
         }
+    }
+
+    fun findByStateWait(): Photo? {
+        return photoDao.findByStateWait()
     }
 }

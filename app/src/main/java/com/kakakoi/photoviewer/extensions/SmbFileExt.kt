@@ -14,11 +14,13 @@ fun SmbFile.downloadShrinkPhoto(
     application: Application,
     basePath: String
 ): String{
+    Log.d(TAG, "downloadShrinkPhoto: start [${this.path}] ")
     val startTime = System.currentTimeMillis()
 
     val bitmapCompressInt = 100
     val inputSize = this.length()
     val inputPath = this.path
+    Log.d(TAG, "downloadShrinkPhoto: basepath $basePath target file $inputPath")
     val inputDir = inputPath.replace(basePath, "")
     val outName = inputDir.replace("/", "_")
 
