@@ -13,6 +13,19 @@
         <action
             android:id="@+id/action_main_to_settings"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_MainFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.kakakoi.photoviewer.ui.detail.DetailFragment"
+        android:label="DetailFragment" >
+        <argument
+            android:name="photoId"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 
     <fragment

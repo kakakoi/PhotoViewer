@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
-import com.kakakoi.photoviewer.R
 import com.kakakoi.photoviewer.databinding.MainFragmentBinding
 import com.kakakoi.photoviewer.lib.EventObserver
 
@@ -29,7 +28,8 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewModel.onTransit.observe(viewLifecycleOwner, EventObserver {
-            findNavController().navigate(R.id.action_main_to_settings)
+            val action = MainFragmentDirections.actionMainFragmentToDetailFragment(it.id)
+            findNavController().navigate(action)
         })
         return MainFragmentBinding.inflate(inflater, container, false)
             .apply {

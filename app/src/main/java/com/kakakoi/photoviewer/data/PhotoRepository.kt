@@ -23,4 +23,8 @@ class PhotoRepository(private val photoDao: PhotoDao) {
     fun findByStateWait(): Photo? {
         return photoDao.findByStateWait()
     }
+
+    fun findById(id: Int): LiveData<Photo> {
+        return photoDao.findById(id)
+    }
 }

@@ -16,10 +16,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
     val photos: LiveData<List<Photo>> = getApplication<PhotoViewerApplication>().photoRepository.allPhotos
 
-    val onTransit = MutableLiveData<Event<String>>()
+    val onTransit = MutableLiveData<Event<Photo>>()
 
     fun onClickItem(item: Photo){
-        onTransit.value = Event("onTransit")
+        onTransit.value = Event(item)
         Log.d(TAG, "onClickItem: ${item.id}")
     }
 }

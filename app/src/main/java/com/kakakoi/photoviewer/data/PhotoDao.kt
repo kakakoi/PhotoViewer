@@ -17,8 +17,8 @@ interface PhotoDao {
     @Query("SELECT * FROM photo WHERE id IN (:photoIds)")
     fun loadAllByIds(photoIds: IntArray): List<Photo>
 
-    @Query("SELECT * FROM photo WHERE name LIKE :name LIMIT 1")
-    fun findByName(name: String): Photo
+    @Query("SELECT * FROM photo WHERE id = :id")
+    fun findById(id: Int): LiveData<Photo>
 
     @Query("SELECT * FROM photo WHERE network_path = :networkPath")
     fun findByNetworkPath(networkPath: String): Photo?
