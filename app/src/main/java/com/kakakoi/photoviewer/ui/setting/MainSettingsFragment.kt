@@ -13,14 +13,17 @@ import com.kakakoi.photoviewer.R
 import com.kakakoi.photoviewer.databinding.MainSettingsFragmentBinding
 import com.kakakoi.photoviewer.lib.EventObserver
 
+
 class MainSettingsFragment : Fragment() {
 
     companion object {
         fun newInstance() = MainSettingsFragment()
+        const val TAG = "MainSettingsFragment"
     }
 
     private val viewModel: MainSettingsViewModel by viewModels()
     private lateinit var storageAdapter: StorageAdapter
+    private lateinit var rootView: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +42,7 @@ class MainSettingsFragment : Fragment() {
                 }
             }
         })
-        return MainSettingsFragmentBinding.inflate(inflater, container, false)
+        rootView =  MainSettingsFragmentBinding.inflate(inflater, container, false)
             .apply {
                 this.viewModel = this@MainSettingsFragment.viewModel
                 lifecycleOwner = viewLifecycleOwner
@@ -60,6 +63,7 @@ class MainSettingsFragment : Fragment() {
             .run {
                 root
             }
+        return rootView
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -67,8 +71,8 @@ class MainSettingsFragment : Fragment() {
         viewModel.run {
             allStorages.observe(viewLifecycleOwner, {
                 storageAdapter.submitList(it)
+                viewModel.indexAndload()
             })
         }
     }
-
 }

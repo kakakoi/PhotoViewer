@@ -1,10 +1,10 @@
 package com.kakakoi.photoviewer.network
 
-import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import com.kakakoi.photoviewer.PhotoViewerApplication
 import com.kakakoi.photoviewer.data.Storage
+import com.kakakoi.photoviewer.lib.Event
 import jcifs.CIFSContext
-import jcifs.CloseableIterator
-import jcifs.SmbResource
 import jcifs.config.PropertyConfiguration
 import jcifs.context.BaseContext
 import jcifs.smb.NtlmPasswordAuthenticator
@@ -12,15 +12,19 @@ import jcifs.smb.SmbFile
 import java.net.MalformedURLException
 import java.util.*
 
-class Smb(val storage: Storage) {
+
+class Smb(private val application: PhotoViewerApplication, private val storage: Storage) {
 
     companion object {
         const val TAG = "Smb"
         const val SMB_SCHEME = "smb:\\\\"
     }
 
+    val onTransit = MutableLiveData<Event<String>>()
+
     private val cifsContext = login()
-    private val basePath = SMB_SCHEME + storage.address + storage.dir
+    val basePath = SMB_SCHEME + storage.address + storage.dir
+    val baseUrl = convertUrl(basePath)
     val info = "smb info: basePath=${basePath}, user=${storage.user}, pass=${storage.pass}"
 
     private fun login(): CIFSContext{
@@ -40,7 +44,7 @@ class Smb(val storage: Storage) {
 
     fun connect(uncPath: String = basePath): SmbFile? {
         return try {
-            val url = uncPath?.replace("\\", "/")
+            val url = convertUrl(uncPath)
             SmbFile(url, cifsContext)
         } catch (e: MalformedURLException) {
             e.printStackTrace()
@@ -48,16 +52,7 @@ class Smb(val storage: Storage) {
         }
     }
 
-    fun createIndex(smbFile: SmbFile) {
-        var count = 0
-        val iterator = smbFile.children()
-        while (iterator.hasNext()) {
-            val resource = iterator.next() as SmbFile
-            if (resource.isDirectory()) {
-                Log.d(TAG, "createIndex: ${resource.name}")
-            } else {
-
-            }
-        }
+    fun convertUrl(uncPath: String = basePath): String {
+        return uncPath.replace("\\", "/")
     }
 }
