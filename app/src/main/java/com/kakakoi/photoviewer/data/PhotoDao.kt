@@ -1,5 +1,6 @@
 package com.kakakoi.photoviewer.data
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -8,7 +9,10 @@ import androidx.room.Query
 @Dao
 interface PhotoDao {
     @Query("SELECT * FROM photo")
-    fun getAll(): List<Photo>
+    fun getAll(): LiveData<List<Photo>>
+
+    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL")
+    fun getAllWithCache(): LiveData<List<Photo>>
 
     @Query("SELECT * FROM photo WHERE id IN (:photoIds)")
     fun loadAllByIds(photoIds: IntArray): List<Photo>

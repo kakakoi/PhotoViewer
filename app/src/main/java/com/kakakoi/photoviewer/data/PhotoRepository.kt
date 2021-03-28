@@ -1,6 +1,10 @@
 package com.kakakoi.photoviewer.data
 
+import androidx.lifecycle.LiveData
+
 class PhotoRepository(private val photoDao: PhotoDao) {
+
+    val allPhotos: LiveData<List<Photo>> = photoDao.getAllWithCache()
 
     fun marge(photo: Photo) {
         val old = photoDao.findByNetworkPath(photo.networkPath)
