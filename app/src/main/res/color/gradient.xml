@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gradient xmlns:android="http://schemas.android.com/apk/res/android"
+    android:startColor="@color/colorPrimary"
+    android:centerColor="@color/purple_2"
+    android:endColor="@color/colorPrimaryDark"
+    android:startX="50"
+    android:startY="6"
+    android:centerX="50"
+    android:centerY="15"
+    android:endX="50"
+    android:endY="19"
+    android:type="linear">
+</gradient>

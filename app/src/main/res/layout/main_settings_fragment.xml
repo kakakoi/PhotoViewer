@@ -92,6 +92,7 @@
             android:drawableStart="@android:drawable/ic_input_add"
             android:onClick="@{() -> viewModel.onClick()}"
             android:text="@string/add_nas"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
