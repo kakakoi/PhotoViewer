@@ -27,10 +27,16 @@ class MainSettingsViewModel(application: Application) : AndroidViewModel(applica
 
     private val storagesRaw = mutableListOf<Storage>()
     private val _storages = MutableLiveData<List<Storage>>(emptyList())
-    val allStorages: LiveData<List<Storage>> = (application as PhotoViewerApplication).storageRepository.allStorage.asLiveData()
-    private val smbStatusRepo = (application as PhotoViewerApplication).smbStatusRepository
+    private val app = (application as PhotoViewerApplication)
+    val allStorages: LiveData<List<Storage>> = app.storageRepository.allStorage.asLiveData()
+    private val smbStatusRepo = app.smbStatusRepository
     val smbStatus: LiveData<SmbStatus> = smbStatusRepo.status
     val smbFileSize: LiveData<String> = smbStatusRepo.smbFileSize
+
+    private val photoRepo = app.photoRepository
+    val countAllPhotos = photoRepo.countAll()
+    val countWaitPhotos = photoRepo.countWait()
+    val countLoadPhotos = photoRepo.countLoad()
 
     fun onClickItem(item: Storage){
         onTransit.value = Event("onTransit")

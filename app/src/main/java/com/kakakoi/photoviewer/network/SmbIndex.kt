@@ -7,6 +7,7 @@ import com.kakakoi.photoviewer.data.SmbDirectory
 import com.kakakoi.photoviewer.data.SmbStatus
 import com.kakakoi.photoviewer.data.Storage
 import com.kakakoi.photoviewer.extensions.getNowDate
+import com.kakakoi.photoviewer.extensions.getNowTimeInMillis
 import com.kakakoi.photoviewer.extensions.mimetype
 import jcifs.smb.SmbFile
 import java.util.*
@@ -149,12 +150,13 @@ class SmbIndex (
             Photo(
                 0,
                 smbFile.name,
-                Calendar.getInstance().getNowDate(),
-                Calendar.getInstance().getNowDate(),//TODO data time origin
+                Calendar.getInstance().getNowTimeInMillis(),
+                Calendar.getInstance().getNowTimeInMillis(),//TODO data time origin
                 -1,
                 "",
                 smbFile.path,
                 smbFile.name.mimetype(),
+                0.0,
                 false
             )
         )

@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
 
 class SmbStatusRepository(private val application: Application) {
-    private val _status = MutableLiveData<SmbStatus>()
+    private val _status = MutableLiveData<SmbStatus>(emptyData())
     private val _smbFileSize = MutableLiveData<String>()
     val status: LiveData<SmbStatus> = _status.distinctUntilChanged()
     val smbFileSize: LiveData<String> = _smbFileSize.distinctUntilChanged()
@@ -15,5 +15,14 @@ class SmbStatusRepository(private val application: Application) {
     fun update(smbStatus: SmbStatus){
         _status.postValue(smbStatus)
         _smbFileSize.postValue(Formatter.formatShortFileSize(application, smbStatus.size))
+    }
+
+    private fun emptyData():SmbStatus {
+        return SmbStatus(
+            "",
+            "",
+            "",
+            0
+        )
     }
 }

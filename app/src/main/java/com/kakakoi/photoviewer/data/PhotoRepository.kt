@@ -13,11 +13,16 @@ class PhotoRepository(private val photoDao: PhotoDao) {
                 photo.cachePath ?: "",
                 photo.dateTimeOriginal,
                 photo.resource,
-                photo.networkPath
+                photo.networkPath,
+                photo.smiling
             )
         } ?: run {
             photoDao.insertAll(photo)
         }
+    }
+
+    fun updateSmiling(networkPath: String, smiling: Double?) {
+        photoDao.updateSmiling(networkPath, smiling)
     }
 
     fun findByStateWait(): Photo? {
@@ -26,5 +31,17 @@ class PhotoRepository(private val photoDao: PhotoDao) {
 
     fun findById(id: Int): LiveData<Photo> {
         return photoDao.findById(id)
+    }
+
+    fun countAll(): LiveData<Int> {
+        return photoDao.countAll()
+    }
+
+    fun countWait(): LiveData<Int> {
+        return photoDao.countWait()
+    }
+
+    fun countLoad(): LiveData<Int> {
+        return photoDao.countLoad()
     }
 }

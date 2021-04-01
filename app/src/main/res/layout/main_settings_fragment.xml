@@ -52,22 +52,48 @@
             app:layout_constraintStart_toEndOf="@+id/nas_input_add"
             app:layout_constraintTop_toBottomOf="@+id/scroll_view">
 
-            <TextView
-                android:id="@+id/smb_status_text"
+            <LinearLayout
+                android:id="@+id/smb_progress_message"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{viewModel.smbStatus.status}"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
                 app:layout_constraintTop_toBottomOf="@+id/smb_status_layout"
                 app:layout_constraintBottom_toTopOf="@+id/smb_status_file_size_text"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/smb_status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(viewModel.smbStatus.status)}" />
+
+                <TextView
+                    android:id="@+id/progress_photos_count_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(viewModel.countAllPhotos)}" />
+
+                <TextView
+                    android:id="@+id/progress_photos_count_index_spacer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" / " />
+
+                <TextView
+                    android:id="@+id/progress_photos_count_load"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(viewModel.countLoadPhotos)}" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/smb_status_file_size_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.smbFileSize}"
-                app:layout_constraintTop_toBottomOf="@+id/smb_status_text"
+                app:layout_constraintTop_toBottomOf="@+id/smb_progress_message"
                 app:layout_constraintBottom_toTopOf="@+id/smb_status_file_name_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

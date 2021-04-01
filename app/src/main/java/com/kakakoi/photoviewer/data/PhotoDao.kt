@@ -26,11 +26,23 @@ interface PhotoDao {
     @Query("SELECT * FROM photo WHERE cache_path IS NULL OR cache_path IS '' LIMIT 1")
     fun findByStateWait(): Photo?
 
+    @Query("SELECT COUNT(id) FROM photo")
+    fun countAll(): LiveData<Int>
+
+    @Query("SELECT COUNT(id) FROM photo WHERE cache_path IS NULL OR cache_path IS ''")
+    fun countWait(): LiveData<Int>
+
+    @Query("SELECT COUNT(id) FROM photo WHERE LENGTH(cache_path) > 0 ")
+    fun countLoad(): LiveData<Int>
+
     @Insert
     fun insertAll(vararg photos: Photo)
 
-    @Query("UPDATE photo SET cache_path = :cachePath, date_time_original = :dateTimeOriginal, resource = :resource WHERE network_path = :networkPath")
-    fun update(cachePath: String, dateTimeOriginal: String, resource: Int, networkPath: String)
+    @Query("UPDATE photo SET cache_path = :cachePath, date_time_original = :dateTimeOriginal, resource = :resource, smiling = :smiling WHERE network_path = :networkPath")
+    fun update(cachePath: String, dateTimeOriginal: Long, resource: Int, networkPath: String, smiling: Double?)
+
+    @Query("UPDATE photo SET smiling = :smiling WHERE network_path =:networkPath")
+    fun updateSmiling(networkPath: String, smiling:Double?)
 
     @Delete
     fun delete(photo: Photo)

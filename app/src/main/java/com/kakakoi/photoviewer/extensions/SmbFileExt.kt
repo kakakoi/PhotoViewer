@@ -4,8 +4,11 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.util.Log
+import androidx.exifinterface.media.ExifInterface
 import jcifs.smb.SmbFile
+import java.io.InputStream
 
 val REQUIRED_SIZE = 300
 val TAG = "extensions.SmbFileExt"
@@ -47,12 +50,17 @@ fun SmbFile.decodeSampledBitmap(
 
         // Decode bitmap with inSampleSize set
         it.inJustDecodeBounds = false
+        val degree = getDegree(inputStream)
+        Log.d(TAG, "decodeSampledBitmap: degree=$degree name=${this.name}")
 
         inputStream.close()
         inputStream = this.inputStream
         //初めのdecodeStreamで
-        val bitmap = BitmapFactory.decodeStream(inputStream, null, it)
+        val bitmap = BitmapFactory.decodeStream(inputStream, null, it)?.let {
+            rotateImage(it, degree)
+        }
         inputStream.close()
+
         return bitmap
     }
 }
@@ -75,4 +83,26 @@ fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeig
     }
 
     return inSampleSize
+}
+
+fun getDegree(inputStream: InputStream): Float {
+    val exif = ExifInterface(inputStream)
+    return when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_UNDEFINED)) {
+        // 正しい方向の場合は回転させない
+        1 -> { 0f }
+        // 逆向きなので180度回転させる
+        3-> { 180f }
+        // 左向きの画像になってるので90度回転させる
+        6 -> { 90f }
+        // 右向きの画像になってるので270度回転させる
+        8 -> { 270f }
+        else -> { 0f }
+    }
+}
+
+fun rotateImage(bitmap: Bitmap, degree: Float): Bitmap? {
+    if (degree <= 0f) return bitmap
+    val matrix = Matrix()
+    matrix.postRotate(degree)
+    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 }
