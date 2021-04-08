@@ -11,8 +11,11 @@ interface PhotoDao {
     @Query("SELECT * FROM photo")
     fun getAll(): LiveData<List<Photo>>
 
-    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL")
+    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' ")
     fun getAllWithCache(): LiveData<List<Photo>>
+
+    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' AND (smiling IS NULL OR smiling = 0) LIMIT :limit")
+    fun getUnAnalyzed(limit: Int): List<Photo>?
 
     @Query("SELECT * FROM photo WHERE id IN (:photoIds)")
     fun loadAllByIds(photoIds: IntArray): List<Photo>

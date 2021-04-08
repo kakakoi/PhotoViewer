@@ -45,7 +45,6 @@ class DetailFragment : Fragment() {
                     val action: Int = event.action
                     when(action) {
                         MotionEvent.ACTION_MOVE -> {
-                            viewModel?.detectFaces()
                             Log.d(TAG, "Action was MOVE X${event.x} Y${event.y}")
                             true
                         }

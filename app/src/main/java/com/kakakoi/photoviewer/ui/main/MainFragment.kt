@@ -27,6 +27,7 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel.applyFaceDetect()
         viewModel.onTransit.observe(viewLifecycleOwner, EventObserver {
             val action = MainFragmentDirections.actionMainFragmentToDetailFragment(it.id)
             findNavController().navigate(action)

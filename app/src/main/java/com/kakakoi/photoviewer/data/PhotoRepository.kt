@@ -1,6 +1,8 @@
 package com.kakakoi.photoviewer.data
 
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class PhotoRepository(private val photoDao: PhotoDao) {
 
@@ -21,8 +23,14 @@ class PhotoRepository(private val photoDao: PhotoDao) {
         }
     }
 
-    fun updateSmiling(networkPath: String, smiling: Double?) {
-        photoDao.updateSmiling(networkPath, smiling)
+    suspend fun updateSmiling(networkPath: String, smiling: Double?) {
+        withContext(Dispatchers.IO) {
+            photoDao.updateSmiling(networkPath, smiling)
+        }
+    }
+
+    fun findUnAnalyzed(limit: Int): List<Photo>? {
+        return photoDao.getUnAnalyzed(limit)
     }
 
     fun findByStateWait(): Photo? {
