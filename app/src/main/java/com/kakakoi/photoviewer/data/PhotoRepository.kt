@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 class PhotoRepository(private val photoDao: PhotoDao) {
 
     val allPhotos: LiveData<List<Photo>> = photoDao.getAllWithCache()
+    val allSmile: LiveData<List<Photo>> = photoDao.getAllSmile()
 
     fun marge(photo: Photo) {
         val old = photoDao.findByNetworkPath(photo.networkPath)
