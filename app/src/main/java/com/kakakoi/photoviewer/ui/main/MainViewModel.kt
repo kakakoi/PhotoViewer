@@ -10,7 +10,8 @@ import com.kakakoi.photoviewer.PhotoViewerApplication
 import com.kakakoi.photoviewer.data.Photo
 import com.kakakoi.photoviewer.lib.Event
 import com.kakakoi.photoviewer.worker.FaceDetectWorker
-import java.util.concurrent.TimeUnit
+import com.kakakoi.photoviewer.worker.IndexWorker
+import com.kakakoi.photoviewer.worker.LoadWorker
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -30,22 +31,51 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.d(TAG, "onClickItem: ${item.id}")
     }
 
-    fun applyFaceDetect() {
+    fun enqueueWorks() {
+        applyWorker()
+    }
+
+    private fun buildFaceDetectWorker():OneTimeWorkRequest {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.UNMETERED)
             .setRequiresCharging(true)
             .build()
 
-        val faceDetectRequest =
-            PeriodicWorkRequestBuilder<FaceDetectWorker>(15, TimeUnit.MINUTES)
+        return OneTimeWorkRequestBuilder<FaceDetectWorker>()
+            .setConstraints(constraints)
+            .build()
+    }
+
+    private fun buildIndexWork():OneTimeWorkRequest {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .setRequiresCharging(true)
+            .build()
+
+            return OneTimeWorkRequestBuilder<IndexWorker>()
                 .setConstraints(constraints)
                 .build()
+    }
 
-        workManager.enqueueUniquePeriodicWork(
-            "faceDetect",
-            //ExistingPeriodicWorkPolicy.KEEP,
-            ExistingPeriodicWorkPolicy.REPLACE,
-            faceDetectRequest
+    private fun buildLoadWork():OneTimeWorkRequest {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .setRequiresCharging(true)
+            .build()
+
+        return OneTimeWorkRequestBuilder<LoadWorker>()
+            .setConstraints(constraints)
+            .build()
+    }
+
+    private fun applyWorker() {
+        workManager.beginUniqueWork(
+            "crawling",
+            ExistingWorkPolicy.REPLACE,
+            buildIndexWork()
         )
+            .then(buildLoadWork())
+            .then(buildFaceDetectWorker())
+            .enqueue()
     }
 }

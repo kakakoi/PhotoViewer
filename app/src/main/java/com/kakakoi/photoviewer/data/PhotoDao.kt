@@ -1,20 +1,17 @@
 package com.kakakoi.photoviewer.data
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface PhotoDao {
-    @Query("SELECT * FROM photo")
+    @Query("SELECT * FROM photo ORDER BY date_time_original DESC")
     fun getAll(): LiveData<List<Photo>>
 
-    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' ")
+    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' ORDER BY date_time_original DESC")
     fun getAllWithCache(): LiveData<List<Photo>>
 
-    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' AND smiling > 0.5")
+    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' AND smiling > 0.5 ORDER BY date_time_original DESC")
     fun getAllSmile(): LiveData<List<Photo>>
 
     @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' AND (smiling IS NULL OR smiling = 0) LIMIT :limit")
@@ -29,7 +26,7 @@ interface PhotoDao {
     @Query("SELECT * FROM photo WHERE network_path = :networkPath")
     fun findByNetworkPath(networkPath: String): Photo?
 
-    @Query("SELECT * FROM photo WHERE cache_path IS NULL OR cache_path IS '' LIMIT 1")
+    @Query("SELECT * FROM photo WHERE network_path IS NOT NULL AND network_path IS NOT '' AND (cache_path IS NULL OR cache_path IS '') LIMIT 1")
     fun findByStateWait(): Photo?
 
     @Query("SELECT COUNT(id) FROM photo")

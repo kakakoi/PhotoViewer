@@ -40,7 +40,7 @@ class StorageSettingsFragment : PreferenceFragmentCompat() {
         // navigation main settings
         viewModel.onTransit.observe(this, EventObserver {
             when(it) {
-                viewModel.TRANSIT_SUCCESS -> findNavController().navigate(R.id.main_settings_fragment)
+                viewModel.TRANSIT_SUCCESS -> findNavController().navigate(R.id.MainFragment)
                 viewModel.TRANSIT_FAILURE ->
                     Snackbar.make(
                         requireActivity().findViewById(android.R.id.content),

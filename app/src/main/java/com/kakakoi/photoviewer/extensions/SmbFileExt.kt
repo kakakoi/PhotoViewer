@@ -1,6 +1,5 @@
 package com.kakakoi.photoviewer.extensions
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,12 +8,16 @@ import android.util.Log
 import androidx.exifinterface.media.ExifInterface
 import jcifs.smb.SmbFile
 import java.io.InputStream
+import java.text.ParsePosition
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.regex.Pattern
 
 val REQUIRED_SIZE = 300
 val TAG = "extensions.SmbFileExt"
 
 fun SmbFile.downloadShrinkPhoto(
-    application: Application,
+    context: Context,
     basePath: String
 ): String{
     Log.d(TAG, "downloadShrinkPhoto: start [${this.path}] ")
@@ -27,7 +30,7 @@ fun SmbFile.downloadShrinkPhoto(
     val inputDir = inputPath.replace(basePath, "")
     val outName = inputDir.replace("/", "_")
 
-    val fileOut = application.openFileOutput(outName, Context.MODE_PRIVATE)
+    val fileOut = context.openFileOutput(outName, Context.MODE_PRIVATE)
     val bitmap = this.decodeSampledBitmap(REQUIRED_SIZE, REQUIRED_SIZE)
     val result = bitmap?.compress(Bitmap.CompressFormat.JPEG, bitmapCompressInt, fileOut)
     Log.d(TAG, "downloadShrinkPhoto: [${this.path}] > [$outName] time:${(System.currentTimeMillis() - startTime)}")
@@ -106,3 +109,44 @@ fun rotateImage(bitmap: Bitmap, degree: Float): Bitmap? {
     matrix.postRotate(degree)
     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 }
+
+fun SmbFile.getExifDateTimeOriginal(): Long {
+    val exif = ExifInterface(this.inputStream)
+    val time = parseDateTime(
+        exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL),
+        exif.getAttribute(ExifInterface.TAG_SUBSEC_TIME_ORIGINAL)
+    )
+    return if(time > 0) time else this.date
+}
+
+private fun parseDateTime(dateTimeString: String?, subSecs: String?): Long {
+    val sFormatter = SimpleDateFormat("yyyy:MM:dd HH:mm:ss")
+    sFormatter.timeZone = TimeZone.getTimeZone("UTC")
+    if (dateTimeString == null
+        || !sNonZeroTimePattern.matcher(dateTimeString).matches()
+    ) return -1
+    val pos = ParsePosition(0)
+    return try {
+        // The exif field is in local time. Parsing it as if it is UTC will yield time
+        // since 1/1/1970 local time
+        val datetime = sFormatter.parse(dateTimeString, pos)
+            ?: return -1
+        var msecs = datetime.time
+        if (subSecs != null) {
+            try {
+                var sub = subSecs.toLong()
+                while (sub > 1000) {
+                    sub /= 10
+                }
+                msecs += sub
+            } catch (e: NumberFormatException) {
+                // Ignored
+            }
+        }
+        msecs
+    } catch (e: IllegalArgumentException) {
+        -1
+    }
+}
+
+private val sNonZeroTimePattern = Pattern.compile(".*[1-9].*")

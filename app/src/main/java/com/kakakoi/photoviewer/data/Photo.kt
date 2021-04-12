@@ -9,7 +9,7 @@ data class Photo(
     @PrimaryKey(autoGenerate = true) val id: Int,//TODO primary key -> network_path. id(select max(id) from photo)
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "created_at") val createdAt: Long,
-    @ColumnInfo(name = "date_time_original") val dateTimeOriginal: Long,
+    @ColumnInfo(name = "date_time_original") var dateTimeOriginal: Long,
     @ColumnInfo(name = "resource") val resource: Int,
     @ColumnInfo(name = "cache_path") var cachePath: String?,
     @ColumnInfo(name = "network_path") val networkPath: String,

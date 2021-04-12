@@ -1,11 +1,9 @@
 package com.kakakoi.photoviewer.network
 
+import android.content.Context
 import android.util.Log
-import com.kakakoi.photoviewer.PhotoViewerApplication
-import com.kakakoi.photoviewer.data.Photo
-import com.kakakoi.photoviewer.data.SmbDirectory
-import com.kakakoi.photoviewer.data.SmbStatus
-import com.kakakoi.photoviewer.data.Storage
+import com.kakakoi.photoviewer.data.*
+import com.kakakoi.photoviewer.extensions.getExifDateTimeOriginal
 import com.kakakoi.photoviewer.extensions.getNowDate
 import com.kakakoi.photoviewer.extensions.getNowTimeInMillis
 import com.kakakoi.photoviewer.extensions.mimetype
@@ -17,7 +15,7 @@ import java.util.*
  * 多重実行できないようにシングルトン
  */
 class SmbIndex (
-    private val application: PhotoViewerApplication,
+    private val context: Context,
     private val storage: Storage
 ) {
 
@@ -29,13 +27,23 @@ class SmbIndex (
         private var smb:Smb? = null
         private var parentSmbFile: SmbFile? = null
 
-        fun getInstance(application: PhotoViewerApplication, storage: Storage) = instance ?: synchronized(this) {
+        private var smbStatusRepository: SmbStatusRepository? = null
+        private var smbDirectoryRepository: SmbDirectoryRepository? = null
+        private var photoRepository: PhotoRepository? = null
+
+        fun getInstance(context: Context, storage: Storage) = instance ?: synchronized(this) {
             instance ?: SmbIndex(
-                application,
+                context,
                 storage
             ).also {
                 instance = it
-                smb = Smb(application, storage)
+
+                val database = AppDatabase.getDatabase(context)
+                smbStatusRepository = SmbStatusRepository()//TODO remove context
+                smbDirectoryRepository = SmbDirectoryRepository(database.smbDirectoryDao())
+                photoRepository = PhotoRepository(database.photoDao())
+
+                smb = Smb(storage)
             }
         }
     }
@@ -45,13 +53,10 @@ class SmbIndex (
     }
 
     fun finish(){
-        if(isRunning()) {
-            throw IllegalStateException("already running")//TODO 起動しない場合は別のエラー
-        } else {
-            parentSmbFile?.close()
-            parentSmbFile = null
-            instance = null
-        }
+        parentSmbFile?.close()
+        parentSmbFile = null
+        instance = null
+        smbStatusRepository = null
     }
 
     fun deepCreateIndex(): Int {
@@ -66,7 +71,7 @@ class SmbIndex (
                     Log.d(Smb.TAG, "deepCreateIndex: ${it.path}")
                     countIndex += createIndex(it)//インデックス実行. インデックス件数更新
                     //次のインデックス対象
-                    val nextDirectory = application.smbDirectoryRepository.findWait()
+                    val nextDirectory = smbDirectoryRepository?.findWait()
                     if(nextDirectory != null) {
                         val oldPath = it.path
                         val newPath = nextDirectory.path
@@ -117,7 +122,7 @@ class SmbIndex (
 
     //SMB Directory 初期化. 未処理として登録
     private fun initSmbDirectory(smbFile: SmbFile) {
-        application.smbDirectoryRepository.marge(
+        smbDirectoryRepository?.marge(
             SmbDirectory(
                 smbFile.path,
                 storage.id,
@@ -132,7 +137,7 @@ class SmbIndex (
 
     //SMB Directory インデックス完了として登録
     private fun indexCompleteSmbDirectory(smbFile: SmbFile, countIndex: Int) {
-        application.smbDirectoryRepository.marge(
+        smbDirectoryRepository?.marge(
             SmbDirectory(
                 smbFile.path,
                 storage.id,
@@ -146,12 +151,12 @@ class SmbIndex (
     }
 
     private fun indexCompletePhoto(smbFile: SmbFile) {
-        application.photoRepository.marge(
+        photoRepository?.marge(
             Photo(
                 0,
                 smbFile.name,
                 Calendar.getInstance().getNowTimeInMillis(),
-                Calendar.getInstance().getNowTimeInMillis(),//TODO data time origin
+                smbFile.getExifDateTimeOriginal(),
                 -1,
                 "",
                 smbFile.path,
@@ -164,7 +169,7 @@ class SmbIndex (
     }
 
     private fun updateStatus(id: String = "", status: String = "", smbFile: SmbFile?) {
-        application.smbStatusRepository.update(
+        smbStatusRepository?.update(
             SmbStatus(
                 id,
                 status,

@@ -6,7 +6,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface StorageDao {
     @Query("SELECT * FROM storage")
-    fun getAll(): Flow<List<Storage>>
+    fun getAllAsFlow(): Flow<List<Storage>>
+
+    @Query("SELECT * FROM storage")
+    fun getAll(): List<Storage>
 
     @Query("SELECT * FROM storage WHERE id IN (:storageIds)")
     fun loadAllByIds(storageIds: IntArray): List<Storage>

@@ -12,8 +12,17 @@ class PhotoRepository(private val photoDao: PhotoDao) {
     fun marge(photo: Photo) {
         val old = photoDao.findByNetworkPath(photo.networkPath)
         old?.run {
+
+            //marge
+            photo.smiling = old.smiling?.let {
+                val smile = photo.smiling ?: 0.0
+                if(it > smile) it else smile
+            }
+            photo.dateTimeOriginal = if(photo.dateTimeOriginal < 0L) old.dateTimeOriginal else photo.dateTimeOriginal
+            photo.cachePath = if(photo.cachePath.isNullOrBlank()) old.cachePath else photo.cachePath
+
             photoDao.update(
-                photo.cachePath ?: "",
+                photo.cachePath!!,
                 photo.dateTimeOriginal,
                 photo.resource,
                 photo.networkPath,
