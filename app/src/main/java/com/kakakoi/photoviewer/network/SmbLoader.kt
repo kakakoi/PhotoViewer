@@ -1,40 +1,40 @@
 package com.kakakoi.photoviewer.network
 
+import android.content.Context
 import android.util.Log
-import com.kakakoi.photoviewer.PhotoViewerApplication
-import com.kakakoi.photoviewer.data.Photo
-import com.kakakoi.photoviewer.data.PhotoRepository
-import com.kakakoi.photoviewer.data.SmbStatus
-import com.kakakoi.photoviewer.data.Storage
+import com.kakakoi.photoviewer.data.*
 import com.kakakoi.photoviewer.extensions.downloadShrinkPhoto
 
 class SmbLoader (
-    private val application: PhotoViewerApplication,
+    private val context: Context,
     private val storage: Storage
 ) {
     companion object {
         private val TAG = "SmbLoader"
         private var instance: SmbLoader? = null
         private var smb:Smb? = null
-        private var photoRepository:PhotoRepository? = null
 
-        fun getInstance(application: PhotoViewerApplication, storage: Storage) = instance ?: synchronized(this) {
+        private var photoRepository:PhotoRepository? = null
+        private var smbStatusRepository: SmbStatusRepository? = null
+
+        fun getInstance(context: Context, storage: Storage) = instance ?: synchronized(this) {
             instance ?: SmbLoader(
-                application,
+                context,
                 storage
             ).also {
                 instance = it
-                smb = Smb(application, storage)
+
+                val database = AppDatabase.getDatabase(context)
+                smbStatusRepository = SmbStatusRepository()
+                photoRepository = PhotoRepository(database.photoDao())
+
+                smb = Smb(storage)
             }
         }
     }
 
     private fun isRunning(): Boolean {
         return photoRepository?.let { true } ?: false
-    }
-
-    private fun start() {
-        photoRepository = application.photoRepository
     }
 
     private fun finish(){
@@ -48,15 +48,15 @@ class SmbLoader (
 
     fun load(): Int{
         var counter = 0
-        start()
         var photo: Photo? = null
         photoRepository?.let { pr ->
             do {
                 photo?.let{ p ->
                     smb?.let { s ->
+                        Log.d(TAG, "load: connect photoId=${p.id}")
                         val smbFile = s.connect(p.networkPath)
                         smbFile?.let { sf ->
-                            p.cachePath = sf.downloadShrinkPhoto(application, s.baseUrl)
+                            p.cachePath = sf.downloadShrinkPhoto(context, s.prefixBasePath)
                             pr.marge(p)
                             counter += 1
                             Log.d(TAG, "load: cachePath ${p.cachePath}")
@@ -72,7 +72,7 @@ class SmbLoader (
     }
 
     private fun updateStatus(id: String = "", status: String = "", path: String = "", size: Long = 0L) {
-        application.smbStatusRepository.update(
+        smbStatusRepository?.update(
             SmbStatus(
                 id,
                 status,

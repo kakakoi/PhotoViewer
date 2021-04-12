@@ -122,4 +122,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
+
+    // Face features
+    implementation 'com.google.android.gms:play-services-mlkit-face-detection:16.1.1'
+
+    def work_version = "2.5.0"
+
+    // Kotlin + coroutines
+    implementation "androidx.work:work-runtime-ktx:$work_version"
 }

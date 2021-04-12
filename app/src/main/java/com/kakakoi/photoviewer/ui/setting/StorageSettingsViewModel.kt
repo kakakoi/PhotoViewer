@@ -32,7 +32,7 @@ class StorageSettingsViewModel(application: Application): AndroidViewModel(appli
                 onProgress.postValue(false)
                 return@launch
             }
-            val smb = Smb(getApplication(), storage)
+            val smb = Smb(storage)
             val smbFile = smb.connect()
 
             val result = runCatching {

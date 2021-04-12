@@ -71,7 +71,6 @@ class MainSettingsFragment : Fragment() {
         viewModel.run {
             allStorages.observe(viewLifecycleOwner, {
                 storageAdapter.submitList(it)
-                viewModel.indexAndload()
             })
         }
     }

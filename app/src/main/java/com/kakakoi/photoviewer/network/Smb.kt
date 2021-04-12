@@ -1,7 +1,7 @@
 package com.kakakoi.photoviewer.network
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.kakakoi.photoviewer.PhotoViewerApplication
 import com.kakakoi.photoviewer.data.Storage
 import com.kakakoi.photoviewer.lib.Event
 import jcifs.CIFSContext
@@ -13,7 +13,7 @@ import java.net.MalformedURLException
 import java.util.*
 
 
-class Smb(private val application: PhotoViewerApplication, private val storage: Storage) {
+class Smb(private val storage: Storage) {
 
     companion object {
         const val TAG = "Smb"
@@ -24,6 +24,7 @@ class Smb(private val application: PhotoViewerApplication, private val storage: 
 
     private val cifsContext = login()
     val basePath = SMB_SCHEME + storage.address + storage.dir
+    val prefixBasePath = convertUrl(SMB_SCHEME + storage.address)
     val baseUrl = convertUrl(basePath)
     val info = "smb info: basePath=${basePath}, user=${storage.user}, pass=${storage.pass}"
 
@@ -45,6 +46,7 @@ class Smb(private val application: PhotoViewerApplication, private val storage: 
     fun connect(uncPath: String = basePath): SmbFile? {
         return try {
             val url = convertUrl(uncPath)
+            Log.d(TAG, "connect: path $url")
             SmbFile(url, cifsContext)
         } catch (e: MalformedURLException) {
             e.printStackTrace()

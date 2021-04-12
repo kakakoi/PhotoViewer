@@ -27,4 +27,5 @@
     <string name="smb_connection_failure">このアドレスに接続できません</string>
     <string name="smb_connection_progress">検索中...</string>
     <string name="close">閉じる</string>
+    <string name="submit">追加</string>
 </resources>

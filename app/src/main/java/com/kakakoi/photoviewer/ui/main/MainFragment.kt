@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.kakakoi.photoviewer.databinding.MainFragmentBinding
 import com.kakakoi.photoviewer.lib.EventObserver
 
@@ -21,13 +22,20 @@ class MainFragment : Fragment() {
     }
 
     private val viewModel: MainViewModel by viewModels()
+    private val memoriesViewModel: MemoriesViewModel by viewModels()
     private lateinit var photoAdapter: PhotoAdapter
+    private lateinit var memoriesAdapter: MemoriesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel.enqueueWorks()
         viewModel.onTransit.observe(viewLifecycleOwner, EventObserver {
+            val action = MainFragmentDirections.actionMainFragmentToDetailFragment(it.id)
+            findNavController().navigate(action)
+        })
+        memoriesViewModel.onTransit.observe(viewLifecycleOwner, EventObserver {
             val action = MainFragmentDirections.actionMainFragmentToDetailFragment(it.id)
             findNavController().navigate(action)
         })
@@ -48,6 +56,16 @@ class MainFragment : Fragment() {
                         photoAdapter = it
                     }
                 }
+
+                memories.run {
+                    //layoutManager = GridLayoutManager(context,1, GridLayoutManager.HORIZONTAL, false)
+                    layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false)
+
+                    adapter = MemoriesAdapter(viewLifecycleOwner, this@MainFragment.memoriesViewModel).also {
+                        memoriesAdapter = it
+                    }
+
+                }
             }
             .run {
                 root
@@ -59,6 +77,11 @@ class MainFragment : Fragment() {
         viewModel.run {
             photos.observe(viewLifecycleOwner, {
                 photoAdapter.submitList(it)
+            })
+        }
+        memoriesViewModel.run {
+            photos.observe(viewLifecycleOwner, {
+                memoriesAdapter.submitList(it)
             })
         }
     }

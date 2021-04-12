@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 class StorageRepository(private val storageDao: StorageDao) {
 
-    val allStorage: Flow<List<Storage>> = storageDao.getAll()
+    val allStorage: Flow<List<Storage>> = storageDao.getAllAsFlow()
 
     fun getSharedPreferenceStorage(application: Application): Storage{
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
@@ -30,5 +30,9 @@ class StorageRepository(private val storageDao: StorageDao) {
         } ?: run {
             storageDao.insertAll(storage)
         }
+    }
+
+    fun findAll(): List<Storage> {
+        return storageDao.getAll()
     }
 }

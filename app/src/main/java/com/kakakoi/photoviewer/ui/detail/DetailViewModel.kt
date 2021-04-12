@@ -9,11 +9,13 @@ import com.kakakoi.photoviewer.PhotoViewerApplication
 import com.kakakoi.photoviewer.data.Photo
 import com.kakakoi.photoviewer.lib.Event
 
+
 class DetailViewModel(application: Application) : AndroidViewModel(application) {
 
     companion object{
         const val TAG = "DetailViewModel"
     }
+    private val photoRepo = (application as PhotoViewerApplication).photoRepository
     private var _photo: MutableLiveData<Photo> = MutableLiveData<Photo>().also { it.value = emptyData() }
     var photo: LiveData<Photo> = _photo
         private set
@@ -32,12 +34,13 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
         return Photo(
             0,
             "",
-            "",
-            "",
+            0,
+            0,
             0,
             "",
             "",
-            ""
+            "",
+            0.0
         )
     }
 }

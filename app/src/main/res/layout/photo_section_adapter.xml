@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <data>
+                <variable
+                    name="photo"
+                    type="com.kakakoi.photoviewer.data.Photo" />
+
+                <variable
+                    name="viewModel"
+                    type="com.kakakoi.photoviewer.ui.main.MainViewModel" />
+                <import type="android.text.format.DateFormat" />
+        </data>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.onClickItem(photo)}">
+
+                <ImageView
+                    android:id="@+id/card_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    app:imageUrl="@{String.valueOf(photo.cachePath)}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:transitionName="main_photo" />
+
+                <TextView
+                    android:id="@+id/card_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="bold"
+                    android:text="@{DateFormat.format(`yyyy/MM`,photo.dateTimeOriginal)}"
+                    android:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="40dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
