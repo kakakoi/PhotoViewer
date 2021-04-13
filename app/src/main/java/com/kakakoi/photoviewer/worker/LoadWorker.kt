@@ -20,13 +20,13 @@ class LoadWorker(appContext: Context, params: WorkerParameters): CoroutineWorker
 
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
-            Log.d(IndexWorker.TAG, "doWork: start")
+            Log.d(TAG, "doWork: start")
             try {
                 load()
-                Log.d(IndexWorker.TAG, "doWork: finish")
+                Log.d(TAG, "doWork: finish")
                 Result.success()
             } catch (throwable: Throwable) {
-                Log.e(IndexWorker.TAG, "doWork: ", throwable)
+                Log.e(TAG, "doWork: ", throwable)
                 Result.failure()
             }
         }
@@ -41,10 +41,10 @@ class LoadWorker(appContext: Context, params: WorkerParameters): CoroutineWorker
                 smbLoader.load()
             }.onSuccess {
                 kotlin.Result.success(it)
-                Log.d(MainSettingsViewModel.TAG, "load: count ${it.toString()}")
+                Log.d(TAG, "load: count ${it.toString()}")
             }.onFailure {
                 kotlin.Result.failure<Throwable>(it)
-                Log.d(MainSettingsViewModel.TAG, "load: failure ${it.message}")
+                Log.d(TAG, "load: failure ${it.message}")
             }
         }
     }

@@ -29,6 +29,9 @@ interface PhotoDao {
     @Query("SELECT * FROM photo WHERE network_path IS NOT NULL AND network_path IS NOT '' AND (cache_path IS NULL OR cache_path IS '') LIMIT 1")
     fun findByStateWait(): Photo?
 
+    @Query("SELECT * FROM photo WHERE id != :id AND network_path IS NOT NULL AND network_path IS NOT '' AND (cache_path IS NULL OR cache_path IS '') LIMIT 1")
+    fun findNextByStateWait(id: Int): Photo?
+
     @Query("SELECT COUNT(id) FROM photo")
     fun countAll(): LiveData<Int>
 

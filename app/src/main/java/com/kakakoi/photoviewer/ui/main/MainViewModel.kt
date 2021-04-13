@@ -71,7 +71,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun applyWorker() {
         workManager.beginUniqueWork(
             "crawling",
-            ExistingWorkPolicy.REPLACE,
+            ExistingWorkPolicy.KEEP,
             buildIndexWork()
         )
             .then(buildLoadWork())

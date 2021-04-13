@@ -32,7 +32,7 @@ class IndexWorker(appContext: Context, params: WorkerParameters): CoroutineWorke
         }
     }
 
-    private  fun createIndex(){
+    private fun createIndex(){
         val repo = StorageRepository(AppDatabase.getDatabase(applicationContext).storageDao())
         val list = repo.findAll()
         list?.forEach{
@@ -42,10 +42,10 @@ class IndexWorker(appContext: Context, params: WorkerParameters): CoroutineWorke
                 smbIndex.deepCreateIndex()
             }.onSuccess {
                 kotlin.Result.success(it)
-                Log.d(MainSettingsViewModel.TAG, "createIndex: count ${it.toString()}")
+                Log.d(TAG, "createIndex: count ${it.toString()}")
             }.onFailure {
                 kotlin.Result.failure<Throwable>(it)
-                Log.d(MainSettingsViewModel.TAG, "createIndex: failure ${it.message}")
+                Log.d(TAG, "createIndex: failure ${it.message}")
             }
         }
     }

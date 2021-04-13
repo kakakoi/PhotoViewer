@@ -59,12 +59,14 @@ class SmbLoader (
                             p.cachePath = sf.downloadShrinkPhoto(context, s.prefixBasePath)
                             pr.marge(p)
                             counter += 1
-                            Log.d(TAG, "load: cachePath ${p.cachePath}")
+                            Log.d(TAG, "load: p id=${p.id} p cachePath=${p.cachePath}")
                             updateStatus(status = SmbState.LOAD.name, path = sf.name, size = sf.length())
                         }
                     }
                 }
-                photo = pr.findByStateWait()
+                Log.d(TAG, "load: #1 id check oldId ${photo?.id} threadId ${Thread.currentThread().id}")
+                photo = photo?.let { pr.findNextByStateWait(it.id) } ?: pr.findByStateWait()
+                Log.d(TAG, "load: #1 id check newId ${photo?.id} threadId ${Thread.currentThread().id}")
             } while (photo != null)
         }
         finish()

@@ -33,7 +33,7 @@ fun SmbFile.downloadShrinkPhoto(
     val fileOut = context.openFileOutput(outName, Context.MODE_PRIVATE)
     val bitmap = this.decodeSampledBitmap(REQUIRED_SIZE, REQUIRED_SIZE)
     val result = bitmap?.compress(Bitmap.CompressFormat.JPEG, bitmapCompressInt, fileOut)
-    Log.d(TAG, "downloadShrinkPhoto: [${this.path}] > [$outName] time:${(System.currentTimeMillis() - startTime)}")
+    Log.d(TAG, "downloadShrinkPhoto:  #1 [${this.path}] > [$outName] time:${(System.currentTimeMillis() - startTime)}")
 
     return outName
 }
