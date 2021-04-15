@@ -10,7 +10,7 @@ import com.google.mlkit.vision.face.FaceLandmark
 import com.kakakoi.photoviewer.data.Photo
 import com.kakakoi.photoviewer.data.PhotoRepository
 import com.kakakoi.photoviewer.ui.detail.DetailViewModel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 class FaceDetect(
     private val photoRepo: PhotoRepository,
@@ -29,7 +29,7 @@ class FaceDetect(
         // [END image_from_bitmap]
     }
 
-    fun detectFaces(limit: Int = LIMIT_ANALYZED){
+    suspend fun detectFaces(limit: Int = LIMIT_ANALYZED){
         val photos = photoRepo.findUnAnalyzed(limit)
         photos?.also {
             Log.d(TAG, "detectFaces: UnAnalyzed photos size${it.size}")
@@ -39,7 +39,7 @@ class FaceDetect(
         }
     }
 
-    fun detectFaces(photo: Photo) {
+    suspend fun detectFaces(photo: Photo) {
         val path = "${filesDir}/${photo.cachePath}"
         Log.d(DetailViewModel.TAG, "detectFaces: bitmap path $path")
         val bitmap = BitmapFactory.decodeFile(path)

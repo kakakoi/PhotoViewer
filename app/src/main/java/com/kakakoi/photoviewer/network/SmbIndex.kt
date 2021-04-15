@@ -59,7 +59,7 @@ class SmbIndex (
         smbStatusRepository = null
     }
 
-    fun deepCreateIndex(): Int {
+    suspend fun deepCreateIndex(): Int {
         if(isRunning()) throw IllegalStateException("already running")
         var countIndex = 0
 
@@ -93,7 +93,7 @@ class SmbIndex (
         return countIndex
     }
 
-    private fun createIndex(smbFile: SmbFile): Int {
+    private suspend fun createIndex(smbFile: SmbFile): Int {
         val startTime = System.currentTimeMillis()
         var countIndex = 0
 
@@ -150,7 +150,7 @@ class SmbIndex (
         )
     }
 
-    private fun indexCompletePhoto(smbFile: SmbFile) {
+    private suspend fun indexCompletePhoto(smbFile: SmbFile) {
         photoRepository?.marge(
             Photo(
                 0,

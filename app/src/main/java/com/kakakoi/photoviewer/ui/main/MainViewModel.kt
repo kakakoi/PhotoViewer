@@ -5,6 +5,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.work.*
 import com.kakakoi.photoviewer.PhotoViewerApplication
 import com.kakakoi.photoviewer.data.Photo
@@ -12,6 +15,7 @@ import com.kakakoi.photoviewer.lib.Event
 import com.kakakoi.photoviewer.worker.FaceDetectWorker
 import com.kakakoi.photoviewer.worker.IndexWorker
 import com.kakakoi.photoviewer.worker.LoadWorker
+import kotlinx.coroutines.flow.Flow
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -19,7 +23,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val TAG = "MainViewModel"
         const val TAG_OUTPUT = "OUTPUT"
     }
-    val photos: LiveData<List<Photo>> = getApplication<PhotoViewerApplication>().photoRepository.allPhotos
+    val photos: Flow<PagingData<Photo>> = getApplication<PhotoViewerApplication>().photoRepository.photoStream.cachedIn(viewModelScope)
 
     val onTransit = MutableLiveData<Event<Photo>>()
 
@@ -52,9 +56,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .setRequiresCharging(true)
             .build()
 
-            return OneTimeWorkRequestBuilder<IndexWorker>()
-                .setConstraints(constraints)
-                .build()
+        return OneTimeWorkRequestBuilder<IndexWorker>()
+            .setConstraints(constraints)
+            .build()
     }
 
     private fun buildLoadWork():OneTimeWorkRequest {

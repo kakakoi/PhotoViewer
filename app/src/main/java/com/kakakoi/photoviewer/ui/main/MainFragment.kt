@@ -6,12 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kakakoi.photoviewer.databinding.MainFragmentBinding
 import com.kakakoi.photoviewer.lib.EventObserver
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class MainFragment : Fragment() {
@@ -19,6 +23,7 @@ class MainFragment : Fragment() {
     companion object {
         fun newInstance() = MainFragment()
         const val SPAN_COUNT = 4
+        const val TAG = "MainFragment"
     }
 
     private val viewModel: MainViewModel by viewModels()
@@ -58,13 +63,11 @@ class MainFragment : Fragment() {
                 }
 
                 memories.run {
-                    //layoutManager = GridLayoutManager(context,1, GridLayoutManager.HORIZONTAL, false)
                     layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false)
 
                     adapter = MemoriesAdapter(viewLifecycleOwner, this@MainFragment.memoriesViewModel).also {
                         memoriesAdapter = it
                     }
-
                 }
             }
             .run {
@@ -74,15 +77,22 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel.run {
-            photos.observe(viewLifecycleOwner, {
-                photoAdapter.submitList(it)
-            })
-        }
+        startStreamPhotos()
         memoriesViewModel.run {
             photos.observe(viewLifecycleOwner, {
                 memoriesAdapter.submitList(it)
             })
+        }
+    }
+
+    private var searchJob: Job? = null
+
+    private fun startStreamPhotos() {
+        searchJob?.cancel()
+        searchJob = lifecycleScope.launch {
+            viewModel.photos.collectLatest {
+                photoAdapter.submitData(it)
+            }
         }
     }
 }
