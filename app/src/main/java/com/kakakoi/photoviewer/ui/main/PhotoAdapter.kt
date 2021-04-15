@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.kakakoi.photoviewer.data.Photo
 import com.kakakoi.photoviewer.databinding.PhotoAdapterBinding
@@ -27,7 +27,7 @@ private object DiffCallback : DiffUtil.ItemCallback<Photo>() {
 class PhotoAdapter(
     private val viewLifecycleOwner: LifecycleOwner,
     private val viewModel: MainViewModel,
-) : ListAdapter<Photo, PhotoAdapter.PhotoViewHolder>(DiffCallback) {
+) : PagingDataAdapter<Photo, PhotoAdapter.PhotoViewHolder>(DiffCallback) {
 
     companion object {
         private const val VIEW_TYPE_HEADER = 1
@@ -77,14 +77,14 @@ class PhotoAdapter(
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        holder.bind(getItem(position), viewLifecycleOwner, viewModel)
+        getItem(position)?.let { holder.bind(it, viewLifecycleOwner, viewModel) }
     }
 
     override fun getItemViewType(position: Int): Int {
         if (position < 1) return VIEW_TYPE_DETAIL
 
-        val newItem = getItem(position).dateTimeOriginal
-        val oldItem = getItem(position - 1).dateTimeOriginal
+        val newItem = getItem(position)?.dateTimeOriginal ?: -1
+        val oldItem = getItem(position - 1)?.dateTimeOriginal ?: -1
         if (newItem <= 0L || oldItem <= 0L) return VIEW_TYPE_DETAIL
 
         if (newItem.getYearMonth() == oldItem.getYearMonth())  return VIEW_TYPE_DETAIL

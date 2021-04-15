@@ -1,15 +1,22 @@
 package com.kakakoi.photoviewer.data
 
 import androidx.lifecycle.LiveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class PhotoRepository(private val photoDao: PhotoDao) {
 
-    val allPhotos: LiveData<List<Photo>> = photoDao.getAllWithCache()
+    val photoStream = Pager(
+        PagingConfig(pageSize = PAGE_SIZE, initialLoadSize = PAGE_SIZE)
+    ) {
+        PhotoPagingSource(photoDao)
+    }.flow
+
     val allSmile: LiveData<List<Photo>> = photoDao.getAllSmile()
 
-    fun marge(photo: Photo) {
+    suspend fun marge(photo: Photo) {
         val old = photoDao.findByNetworkPath(photo.networkPath)
         old?.run {
 
@@ -65,5 +72,9 @@ class PhotoRepository(private val photoDao: PhotoDao) {
 
     fun countLoad(): LiveData<Int> {
         return photoDao.countLoad()
+    }
+
+    companion object {
+        const val PAGE_SIZE = 50
     }
 }

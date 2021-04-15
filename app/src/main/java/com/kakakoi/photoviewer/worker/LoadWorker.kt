@@ -7,7 +7,6 @@ import androidx.work.WorkerParameters
 import com.kakakoi.photoviewer.data.AppDatabase
 import com.kakakoi.photoviewer.data.StorageRepository
 import com.kakakoi.photoviewer.network.SmbLoader
-import com.kakakoi.photoviewer.ui.setting.MainSettingsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -32,10 +31,11 @@ class LoadWorker(appContext: Context, params: WorkerParameters): CoroutineWorker
         }
     }
 
-    private  fun load(){
+    private suspend fun load(){
         val repo = StorageRepository(AppDatabase.getDatabase(applicationContext).storageDao())
         val list = repo.findAll()
         list?.forEach{
+            Log.d(TAG, "load: StorageId=${it.id} start..${it.address}/${it.dir}")
             val result = runCatching {
                 val smbLoader = SmbLoader.getInstance(applicationContext, it)
                 smbLoader.load()

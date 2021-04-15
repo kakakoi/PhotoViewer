@@ -46,7 +46,7 @@ class SmbLoader (
         }
     }
 
-    fun load(): Int{
+    suspend fun load(): Int{
         var counter = 0
         var photo: Photo? = null
         photoRepository?.let { pr ->

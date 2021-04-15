@@ -1,7 +1,10 @@
 package com.kakakoi.photoviewer.data
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
 
 @Dao
 interface PhotoDao {
@@ -42,7 +45,7 @@ interface PhotoDao {
     fun countLoad(): LiveData<Int>
 
     @Insert
-    fun insertAll(vararg photos: Photo)
+    suspend fun insertAll(vararg photos: Photo)
 
     @Query("UPDATE photo SET cache_path = :cachePath, date_time_original = :dateTimeOriginal, resource = :resource, smiling = :smiling WHERE network_path = :networkPath")
     fun update(cachePath: String, dateTimeOriginal: Long, resource: Int, networkPath: String, smiling: Double?)
@@ -52,4 +55,7 @@ interface PhotoDao {
 
     @Delete
     fun delete(photo: Photo)
+
+    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' ORDER BY date_time_original DESC LIMIT :limit OFFSET :offset")
+    fun pagingPhotos(offset: Int, limit: Int): List<Photo>
 }

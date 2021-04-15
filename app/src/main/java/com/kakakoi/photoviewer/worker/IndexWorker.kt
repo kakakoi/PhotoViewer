@@ -7,7 +7,6 @@ import androidx.work.WorkerParameters
 import com.kakakoi.photoviewer.data.AppDatabase
 import com.kakakoi.photoviewer.data.StorageRepository
 import com.kakakoi.photoviewer.network.SmbIndex
-import com.kakakoi.photoviewer.ui.setting.MainSettingsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -32,7 +31,7 @@ class IndexWorker(appContext: Context, params: WorkerParameters): CoroutineWorke
         }
     }
 
-    private fun createIndex(){
+    private suspend fun createIndex(){
         val repo = StorageRepository(AppDatabase.getDatabase(applicationContext).storageDao())
         val list = repo.findAll()
         list?.forEach{
