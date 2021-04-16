@@ -17,6 +17,9 @@ interface PhotoDao {
     @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' AND smiling > 0.5 ORDER BY date_time_original DESC")
     fun getAllSmile(): LiveData<List<Photo>>
 
+    @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' AND smiling > 0.5 ORDER BY date_time_original DESC LIMIT :limit")
+    fun getSmile(limit: Int): LiveData<List<Photo>>
+
     @Query("SELECT * FROM photo WHERE cache_path IS NOT NULL AND cache_path != '' AND (smiling IS NULL OR smiling = 0) LIMIT :limit")
     fun getUnAnalyzed(limit: Int): List<Photo>?
 
@@ -41,7 +44,7 @@ interface PhotoDao {
     @Query("SELECT COUNT(id) FROM photo WHERE cache_path IS NULL OR cache_path IS ''")
     fun countWait(): LiveData<Int>
 
-    @Query("SELECT COUNT(id) FROM photo WHERE LENGTH(cache_path) > 0 ")
+    @Query("SELECT COUNT(id) FROM photo WHERE cache_path IS NOT NULL AND cache_path != ''")
     fun countLoad(): LiveData<Int>
 
     @Insert

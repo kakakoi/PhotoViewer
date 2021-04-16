@@ -2,10 +2,7 @@ package com.kakakoi.photoviewer.ui.main
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.work.*
@@ -23,7 +20,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val TAG = "MainViewModel"
         const val TAG_OUTPUT = "OUTPUT"
     }
-    val photos: Flow<PagingData<Photo>> = getApplication<PhotoViewerApplication>().photoRepository.photoStream.cachedIn(viewModelScope)
+    val pRepo = getApplication<PhotoViewerApplication>().photoRepository
+    val photos: Flow<PagingData<Photo>> = pRepo.photoStream.cachedIn(viewModelScope)
+
+    val countAll = pRepo.countAll().distinctUntilChanged()
+    val countWait = pRepo.countWait().distinctUntilChanged()
+    val countLoad = pRepo.countLoad().distinctUntilChanged()
 
     val onTransit = MutableLiveData<Event<Photo>>()
 

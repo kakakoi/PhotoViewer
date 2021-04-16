@@ -1,16 +1,19 @@
 package com.kakakoi.photoviewer.ui.main
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.paging.LoadState
+import androidx.recyclerview.widget.*
+import com.google.android.material.snackbar.Snackbar
+import com.kakakoi.photoviewer.R
 import com.kakakoi.photoviewer.databinding.MainFragmentBinding
 import com.kakakoi.photoviewer.lib.EventObserver
 import kotlinx.coroutines.Job
@@ -30,6 +33,7 @@ class MainFragment : Fragment() {
     private val memoriesViewModel: MemoriesViewModel by viewModels()
     private lateinit var photoAdapter: PhotoAdapter
     private lateinit var memoriesAdapter: MemoriesAdapter
+    private lateinit var binding: MainFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,33 +50,68 @@ class MainFragment : Fragment() {
         })
         return MainFragmentBinding.inflate(inflater, container, false)
             .apply {
+                binding = this
                 this.viewModel = this@MainFragment.viewModel
                 lifecycleOwner = viewLifecycleOwner
 
                 list.run {
-                    layoutManager = GridLayoutManager(context,SPAN_COUNT, GridLayoutManager.VERTICAL, false)
-                    addItemDecoration(
-                        DividerItemDecoration(
-                            context,
-                            DividerItemDecoration.VERTICAL
-                        )
-                    )
-                    adapter = PhotoAdapter(viewLifecycleOwner, this@MainFragment.viewModel).also {
-                        photoAdapter = it
+                    layoutManager = GridLayoutManager(context,SPAN_COUNT, GridLayoutManager.VERTICAL, false).apply {
+                        spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                            override fun getSpanSize(position: Int): Int {
+                                return when (adapter?.getItemViewType(position)) {
+                                    MemoriesAdapter.VIEW_TYPE_HIGHLIGHT -> 2 // 1列
+                                    else -> 1  // 2列
+                                }                            }
+                        }
                     }
-                }
 
-                memories.run {
-                    layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false)
-
-                    adapter = MemoriesAdapter(viewLifecycleOwner, this@MainFragment.memoriesViewModel).also {
+                    val pAdapter = PhotoAdapter(viewLifecycleOwner, this@MainFragment.viewModel).let {
+                        photoAdapter = it
+                        initAdapter()
+                    }
+                    val mAdapter = MemoriesAdapter(viewLifecycleOwner, this@MainFragment.memoriesViewModel).also {
                         memoriesAdapter = it
                     }
+
+                    val config = ConcatAdapter.Config.Builder()
+                        .setIsolateViewTypes(false)  // デフォルトはtrue
+                        .build()
+
+                    adapter = ConcatAdapter(config, mAdapter, pAdapter)
                 }
             }
             .run {
                 root
             }
+    }
+
+    private var mSnackbarSyncPhotoState: Snackbar? = null
+
+    //同期進捗SnackBarを表示
+    private fun showSyncStateSnackbar(view: View) {
+        val sb = StringBuilder()
+        sb.append(viewModel.countAll.value)
+        sb.append(getString(R.string.photo_unit))
+        sb.append(":")
+        sb.append(viewModel.countLoad.value)
+        sb.append(getString(R.string.photo_unit))
+        sb.append(getString(R.string.load_comp))
+
+        val statusStr = sb.toString()
+        if (mSnackbarSyncPhotoState == null) {
+            mSnackbarSyncPhotoState = Snackbar.make(
+                view, statusStr, Snackbar.LENGTH_INDEFINITE
+            )
+        }
+        val snack = mSnackbarSyncPhotoState!!
+        val snackTextView = snack.getView()
+            .findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        snackTextView.text = statusStr
+        snackTextView.ellipsize = TextUtils.TruncateAt.MIDDLE
+        //snackTextView.setSingleLine();
+        snack.setAction(R.string.close,
+            View.OnClickListener { snack.dismiss() })
+        snack.show()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -81,6 +120,18 @@ class MainFragment : Fragment() {
         memoriesViewModel.run {
             photos.observe(viewLifecycleOwner, {
                 memoriesAdapter.submitList(it)
+            })
+        }
+        viewModel.run {
+            countAll.observe(viewLifecycleOwner, {
+                view?.let {
+                    showSyncStateSnackbar(it)
+                }
+            })
+            countLoad.observe(viewLifecycleOwner, {
+                view?.let {
+                    showSyncStateSnackbar(it)
+                }
             })
         }
     }
@@ -94,5 +145,17 @@ class MainFragment : Fragment() {
                 photoAdapter.submitData(it)
             }
         }
+    }
+
+    private fun initAdapter(): ConcatAdapter {
+        val adapter = photoAdapter.withLoadStateHeaderAndFooter(
+            header = PhotosLoadStateAdapter { photoAdapter.retry() },
+            footer = PhotosLoadStateAdapter { photoAdapter.retry() }
+        )
+        photoAdapter.addLoadStateListener { loadState ->
+            //読み込みできなかった場合
+            val isListEmpty = loadState.refresh is LoadState.NotLoading && adapter.itemCount == 0
+        }
+        return adapter
     }
 }
